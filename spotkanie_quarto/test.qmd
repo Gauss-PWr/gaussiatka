@@ -1,0 +1,187 @@
+---
+title: "Quarto - wprowadzenie"
+format: 
+    pdf:
+            toc: true              
+            number-sections: true  
+            colorlinks: true
+            link-citations: true
+jupyter: python3
+editor: visual
+lang: pl
+---
+# Wstęp
+
+Witaj we wprowadzeniu do Quarto! Plik, który właśnie teraz czytasz powstał tylko przy uzyciu tego narzedzia.
+
+Czym jest quarto? 
+
+To narzędzie open source, które generuje eleganckie prezentacje, pliki PDF, world i inne. Integruje ze sobą markdown i kod działający na 
+jupyterze. Mozna w ramach jednego dokumentu operować na kilku językach programowania oraz korzystać ze wszystkich funkcji formatowania tekstu jakie oferuje markdown.
+
+Proces instalacji jest prosty:
+
+    1. Pobierz CLI do quarto z <https://quarto.org/>,
+
+    2. Wybierz swoje środowisko pracy (jupyter, vscode rstudio lub inne z listy wspieranych),
+
+    3. Utwórz plik z rozszerzeniem .qmd,
+
+    4. Rozpocznij edycję.
+
+Warto tez utworzyć środowisko wirtualne do pracy i śledzić co będzie się działo w terminalu, poniewaz znajdują się tam istotne z naszej perspektywy informacje,
+jak na przykład adres pod którym będziemy mogli w przeglądarce sprawdzać na zywo zmiany w dokumencie. Lista komend i innych istotnych informacji znajduje się pod linkiem <https://quarto.org/docs/get-started/>.
+
+# Krok pierwszy - metadane dokumentu.
+
+Aby plik, który będziesz edytować poprawnie się uruchamiał, nalezy najpierw zainstalowanemu quarto zdefiniować czym tak w zasadzie ma być nasz plik.
+
+Jak wygląda takie podstawowe zdefiniowanie metadanych?
+
+Poniżej znajduje się przykład poprawnego nagłówka YAML:
+
+```yaml
+---
+title: "Mój Raport"
+format: html
+execute:
+  echo: false
+  warning: false
+---
+```
+ 
+Omówmy to sobie krok po kroku:
+
+ - title - nazwa dokumentu, domyślnie będzie się wyświetlała jako nagłówek w pliku,
+
+ - format - opisuje w jakim formacie będzie nasz dokument. Do wyboru są rozszerzenia pdf, html, gfm (github markdown) i docx,
+
+ - execute - to najbardziej rozbudowana sekcja. Daje ona instrukcje quarto w jaki sposób ma się obchodzić z kodem.
+        
+        - echo - decyduje o tym, czy wykonywany kod równiez będzie pojawiać się w pliku, 
+            czy tylko rezultat powstały po jego wywołaniu,
+
+        - warning - ukrywa ostrzerzenia wydawane przez pythona 
+            (na przykład o przestarzałej wersji jakiejś biblioteki). 
+            Polepsza przejrzystość dokumentu.
+
+Inne przydatne deklaracje w permabule to na przykład lang - język dokumentu (zmienia niektóre fragmenty generowanie automatycznie), author - autor, date - dzisiejsza data, theme - uzyty motyw.
+
+Kiedy juz zdefiniujemy początkowo nasz dokument mozemy zacząć spisywać tekst jak gdyby nigdy nic pamiętając oczywiście, ze pod maską naszego dokumentu pracuje markdown.
+Warto znać jego funkcje, poniewaz pomimo bycia nieco okrojonym względem TeXa, jest wciaz w stanie w stopniu zadowalającym zaspokoić większość potrzeb,
+które byśmy mieli tworząc raport lub podobny temu dokumentowi skrypt.
+
+# Edycja kodu
+
+## Wykresy
+
+W Quarto kod umieszczamy w specjalnych blokach. Najważniejsze są opcje zapisu (tzw. "hash-pipe" `#|`), które kontrolują zachowanie bloku:
+
+```{{python}}
+#| label: fig-wykres
+#| fig-cap: "Wykres funkcji kwadratowej"
+#| echo: true
+
+import matplotlib.pyplot as plt
+import matplotlib
+
+# Wymuszenie generowania wykresu wewnątrz dokumentu
+%matplotlib inline 
+
+plt.figure(figsize=(8, 4))
+plt.plot([1, 2, 3, 4], [1, 4, 9, 16], marker='o', color='royalblue')
+plt.title("Przykładowy wykres")
+plt.grid(True)
+
+plt.show()
+```
+
+- **label**: unikalny identyfikator (pozwala na odwołania w tekście),
+- **fig-cap**: podpis pod wykresem,
+- **echo**: czy pokazywać kod
+
+Zobaczmy co dzieje się po wywołaniu takiego kodu
+
+```{python}
+#| label: fig-wykres
+#| fig-cap: "Wykres funkcji kwadratowej"
+#| echo: true
+
+import matplotlib.pyplot as plt
+import matplotlib
+
+%matplotlib inline 
+
+plt.figure(figsize=(8, 4))
+plt.plot([1, 2, 3, 4], [1, 4, 9, 16], marker='o', color='royalblue')
+plt.title("Przykładowy wykres")
+plt.grid(True)
+
+plt.show()
+```
+
+## Tabele z danych
+
+Zamiast rysować tabele ręcznie, możemy użyć biblioteki `pandas`. Quarto automatycznie zadba o ich wygląd.
+
+```{python}
+#| label: tbl-dane
+#| tbl-cap: "Wybrane dane z ramki Pandas"
+
+import pandas as pd
+
+dane = pd.DataFrame({
+    "Metoda": ["Regresja", "Lasy Losowe", "Sieci neuronowe"],
+    "Wynik (R2)": [0.85, 0.92, 0.94],
+    "Czas (s)": [0.1, 12.5, 340.2]
+})
+
+dane
+```
+
+W ten sposób omówiliśmy dwie struktury kluczowe do tworzenia raportów. Ze znajomością powyzszych sekcji jesteście w stanie na spokojnie 
+tworzyć na przykład sprawozdania na fizykę (a jest to wyjątkowo uciąliwe) oraz raporty z analizy danych, co przyda się na zajęciach ze statystyki. 
+
+# Zaawansowane funkcje
+
+## Zapis matematyczny
+
+Skoro posługujemy się markdownem, mozemy korzystać z jego wbudowanego modułu obsługi wzorów matematycznych napisanych w składni \LaTeX.
+Mozesz dodać wzór w tekście korzystając z symbolu " $ " lub dodać go w oddzielnej linijce korzystając z podwójnego dolara.
+
+Oto jak zapisać całkę w Quarto:
+
+```markdown
+$\int_{a}^{b} f(x) \,dx$
+Dla wzoru w tekście
+
+$$
+\int_{a}^{b} f(x) \,dx
+$$
+Dla oddzielnej linijki
+```
+
+Więcej opcji opisanych jest bezpośrednio na stronach poświęconych \LaTeX, na przykład <https://quickref.me/latex>.
+
+## Odwołania krzyzowe
+
+Jeśli nadasz wykresowi etykietę (np. `#| label: fig-wykres`), możesz napisać w tekście: 
+```{markdown}
+"Jak widać na @fig-wykres...". 
+```
+
+Quarto automatycznie wstawi tam numer rysunku i stworzy hiperłącze.
+
+# Uwagi końcowe, good to know
+
+Quarto obsługuje interaktywne wykresy w plotly o ile tworzymy nasz raport w html, mozemy dzięki temu tworzyć proste i estetyczne dashboardy.
+
+Na róznych komputerach, systemach, a takze środowiskach program jest w stanie płatać rózne figle i stawiać opór przy renderowaniu pliku lub w ogóle go nie renderować.
+Nie przejmujcie się, jeśli będziecie musieli uciec się do pomocy asystenta AI przy próbie postawienia tego wszystkiego na nogi.
+
+PS:
+
+Skrypt ten ma przede wszystkim przyblizyć ideę oraz podstawy quarto. Kazdy projekt jest inny i wymaga uzycia róznych funkcji,
+dlatego nie ma większego sensu w próbie zawarcia wszystkiego na raz w jednym PDF'ie. Podane przeze mnie linki w dokumencie pomagają uczyć się 
+na własną rękę i zaspokajać ciekawość potencjalnego uzytkownika. Dziękuję za poświęcony czas, Wesołych Świąt!
+
